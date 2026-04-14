@@ -8,6 +8,7 @@
 
 ```
 ⎇ main | Claude Opus 4.6 | ~$1.23 | ctx: 40% | 5h: 12% | 7d: 3%
+~/path/to/project
 ```
 
 | 欄位 | 說明 |
@@ -18,6 +19,7 @@
 | `ctx: 40%` | Context window 使用率（帶顏色）|
 | `5h: 12%` | 5 小時速率限制使用率（僅 Pro/Max）|
 | `7d: 3%` | 7 天速率限制使用率（僅 Pro/Max）|
+| `~/path/to/project` | 目前工作目錄（暗灰色，`$HOME` 顯示為 `~`）|
 
 ### 顏色說明
 

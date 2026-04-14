@@ -8,6 +8,7 @@ A customizable status bar for [Claude Code](https://docs.anthropic.com/en/docs/c
 
 ```
 ⎇ main | Claude Opus 4.6 | ~$1.23 | ctx: 40% | 5h: 12% | 7d: 3%
+~/path/to/project
 ```
 
 | Field | Description |
@@ -18,6 +19,7 @@ A customizable status bar for [Claude Code](https://docs.anthropic.com/en/docs/c
 | `ctx: 40%` | Context window usage (color-coded) |
 | `5h: 12%` | 5-hour rate limit usage (Pro/Max only) |
 | `7d: 3%` | 7-day rate limit usage (Pro/Max only) |
+| `~/path/to/project` | Current working directory (gray, `$HOME` shown as `~`) |
 
 ### Color coding
 

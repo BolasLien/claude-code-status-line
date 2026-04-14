@@ -7,7 +7,17 @@ input=$(cat)
 GREEN=$(printf '\x1b[32m')
 YELLOW=$(printf '\x1b[33m')
 RED=$(printf '\x1b[1;31m')
+GRAY=$(printf '\x1b[90m')
 RESET=$(printf '\x1b[0m')
+
+# --- Current working directory (with ~ substitution) ---
+cwd=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // empty')
+if [ -z "$cwd" ]; then
+  cwd=$(pwd)
+fi
+case "$cwd" in
+  "$HOME"*) cwd="~${cwd#$HOME}" ;;
+esac
 
 # --- Model ---
 model=$(echo "$input" | jq -r '.model.display_name // "Unknown"')
@@ -75,4 +85,4 @@ if [ -n "$rl5h" ] || [ -n "$rl7d" ]; then
   rl_str=" | ${rl_parts}"
 fi
 
-printf "%s%s | %s | ctx: %s%s" "$branch_str" "$model" "$cost_str" "$ctx_str" "$rl_str"
+printf "%s%s | %s | ctx: %s%s\n%s%s%s" "$branch_str" "$model" "$cost_str" "$ctx_str" "$rl_str" "$GRAY" "$cwd" "$RESET"
