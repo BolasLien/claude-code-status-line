@@ -2,7 +2,7 @@
 
 [English README](README.md)
 
-一個可自訂的 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 狀態列，在終端機底部即時顯示 session 資訊。
+一個可自訂的 [Claude Code](https://docs.anthropic.com/en/docs/claude-code) 與 [Google Antigravity CLI (`agy`)](https://antigravity.google) 狀態列，在終端機底部即時顯示 session 資訊。
 
 ## 顯示內容
 
@@ -16,11 +16,11 @@
 | 欄位 | 說明 |
 |------|------|
 | `⎇ main` | 目前 git 分支（綠色）|
-| `Claude Opus 4.6` | 使用中的模型名稱 |
-| `~$1.23` | 本次 session 估算費用（USD）|
+| `Claude Opus 4.6` / `Gemini 3.7 Flash` | 使用中的模型名稱 |
+| `~$1.23` | 本次 session 估算費用（USD，支援多模型動態計價）|
 | `ctx: 40%` | Context window 使用率（帶顏色）|
-| `5h: 12%` | 5 小時速率限制使用率（僅 Pro/Max）|
-| `7d: 3%` | 7 天速率限制使用率（僅 Pro/Max）|
+| `5h: 12%` | 5 小時速率限制 / 配額使用率（Claude Pro/Max 或 Antigravity）|
+| `7d: 3%` | 7 天速率限制 / 每週配額使用率（Claude Pro/Max 或 Antigravity）|
 | `~/path/to/project` | 目前工作目錄（暗灰色，`$HOME` 顯示為 `~`）|
 
 ### 顏色說明
@@ -30,7 +30,7 @@
 - 黃色：50-70%（較早的對話可能被遺忘）
 - 紅色 + 警告：>= 70%（建議壓縮對話）
 
-**速率限制：**
+**速率限制 / Quota：**
 - 綠色：< 50%
 - 黃色：50-90%
 - 紅色：>= 90%
@@ -47,6 +47,7 @@ cd claude-code-status-line
 
 ### 手動安裝
 
+#### Claude Code
 1. 複製 `statusline.sh` 到 `~/.claude/`：
 
 ```bash
@@ -67,6 +68,27 @@ chmod +x ~/.claude/statusline.sh
 
 3. 重新啟動 Claude Code。
 
+#### Antigravity CLI (`agy`)
+1. 複製 `statusline.sh` 到 `~/.gemini/antigravity-cli/`：
+
+```bash
+cp statusline.sh ~/.gemini/antigravity-cli/statusline.sh
+chmod +x ~/.gemini/antigravity-cli/statusline.sh
+```
+
+2. 在 `~/.gemini/antigravity-cli/settings.json` 加入設定：
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "~/.gemini/antigravity-cli/statusline.sh"
+  }
+}
+```
+
+3. 重新啟動 Antigravity CLI (`agy`)。
+
 ## 相依性
 
 - [jq](https://jqlang.github.io/jq/) — JSON 處理工具
@@ -84,7 +106,7 @@ sudo pacman -S jq
 
 ## 自訂
 
-編輯 `~/.claude/statusline.sh` 即可自訂：
+編輯 `statusline.sh` 即可自訂：
 
 - **顏色門檻**：修改 `if/elif` 條件中的百分比數值
 - **欄位**：在最後的 `printf` 增減區段
@@ -92,3 +114,4 @@ sudo pacman -S jq
 ## 授權
 
 [MIT](LICENSE)
+
