@@ -2,9 +2,10 @@
 set -e
 
 CLAUDE_DIR="$HOME/.claude"
+AGY_DIR="$HOME/.gemini/antigravity-cli"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "=== Claude Code Status Bar Installer ==="
+echo "=== Claude Code & Antigravity Status Bar Installer ==="
 echo ""
 
 # Check jq dependency
@@ -18,31 +19,47 @@ if ! command -v jq &>/dev/null; then
   exit 1
 fi
 
-# Ensure ~/.claude exists
-mkdir -p "$CLAUDE_DIR"
+# Install for Claude Code
+if [ -d "$CLAUDE_DIR" ] || [ "$1" == "--claude" ]; then
+  mkdir -p "$CLAUDE_DIR"
+  cp "$SCRIPT_DIR/statusline.sh" "$CLAUDE_DIR/statusline.sh"
+  chmod +x "$CLAUDE_DIR/statusline.sh"
+  echo "✅ Installed statusline.sh to $CLAUDE_DIR/statusline.sh"
 
-# Copy statusline script
-cp "$SCRIPT_DIR/statusline.sh" "$CLAUDE_DIR/statusline.sh"
-chmod +x "$CLAUDE_DIR/statusline.sh"
-echo "✅ Installed statusline.sh to $CLAUDE_DIR/statusline.sh"
-
-# Configure settings.json
-SETTINGS_FILE="$CLAUDE_DIR/settings.json"
-
-if [ -f "$SETTINGS_FILE" ]; then
-  # Check if statusLine already configured
-  if echo "$(cat "$SETTINGS_FILE")" | jq -e '.statusLine' &>/dev/null; then
-    echo "⚠️  statusLine already configured in settings.json, updating..."
+  SETTINGS_FILE="$CLAUDE_DIR/settings.json"
+  if [ -f "$SETTINGS_FILE" ]; then
+    if echo "$(cat "$SETTINGS_FILE")" | jq -e '.statusLine' &>/dev/null; then
+      echo "⚠️  statusLine already configured in $SETTINGS_FILE, updating..."
+    fi
+    tmp=$(mktemp)
+    jq '.statusLine = {"type": "command", "command": "~/.claude/statusline.sh"}' "$SETTINGS_FILE" > "$tmp"
+    mv "$tmp" "$SETTINGS_FILE"
+  else
+    echo '{"statusLine":{"type":"command","command":"~/.claude/statusline.sh"}}' | jq . > "$SETTINGS_FILE"
   fi
-  # Add/update statusLine config
-  tmp=$(mktemp)
-  jq '.statusLine = {"type": "command", "command": "~/.claude/statusline.sh"}' "$SETTINGS_FILE" > "$tmp"
-  mv "$tmp" "$SETTINGS_FILE"
-else
-  # Create new settings.json
-  echo '{"statusLine":{"type":"command","command":"~/.claude/statusline.sh"}}' | jq . > "$SETTINGS_FILE"
+  echo "✅ Configured statusLine in $SETTINGS_FILE"
 fi
 
-echo "✅ Configured statusLine in $SETTINGS_FILE"
+# Install for Antigravity CLI (agy)
+if [ -d "$AGY_DIR" ] || [ "$1" == "--agy" ]; then
+  mkdir -p "$AGY_DIR"
+  cp "$SCRIPT_DIR/statusline.sh" "$AGY_DIR/statusline.sh"
+  chmod +x "$AGY_DIR/statusline.sh"
+  echo "✅ Installed statusline.sh to $AGY_DIR/statusline.sh"
+
+  AGY_SETTINGS="$AGY_DIR/settings.json"
+  if [ -f "$AGY_SETTINGS" ]; then
+    if echo "$(cat "$AGY_SETTINGS")" | jq -e '.statusLine' &>/dev/null; then
+      echo "⚠️  statusLine already configured in $AGY_SETTINGS, updating..."
+    fi
+    tmp=$(mktemp)
+    jq '.statusLine = {"type": "command", "command": "~/.gemini/antigravity-cli/statusline.sh"}' "$AGY_SETTINGS" > "$tmp"
+    mv "$tmp" "$AGY_SETTINGS"
+  else
+    echo '{"statusLine":{"type":"command","command":"~/.gemini/antigravity-cli/statusline.sh"}}' | jq . > "$AGY_SETTINGS"
+  fi
+  echo "✅ Configured statusLine in $AGY_SETTINGS"
+fi
+
 echo ""
-echo "🎉 Done! Restart Claude Code to see the status bar."
+echo "🎉 Done! Restart Claude Code / Antigravity CLI to see the status bar."
